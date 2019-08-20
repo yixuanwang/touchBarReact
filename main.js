@@ -7,7 +7,13 @@ let appeared = false
 let time = 0.0
 const result = new TouchBarLabel()
 const wheel = new TouchBarLabel()
-
+const clear = () => {
+  time = 0.0
+  start = false
+  appeared = false
+  wheel.label = "🔵"
+  gameBtn.label = "🔥Start"
+}
 const gameBtn = new TouchBarButton({
   label: '🔥Start',
   click: () => {
@@ -15,6 +21,7 @@ const gameBtn = new TouchBarButton({
       start = true
       gameBtn.label = "Click"
       wheel.label = "🔵"
+      result.label = ""
 
       const reactLength = getRandomTime()
       const startTime = Date.now()
@@ -24,21 +31,20 @@ const gameBtn = new TouchBarButton({
           appeared = true
           time = Date.now()
         } else {
-          setTimeout(react, 10)
+          if(start) {
+            setTimeout(react, 10)
+          }
         }
       }
 
       react()
     } else {
-      start = false
-      wheel.label = "🔵"
-      gameBtn.label = "🔥Start"
       if(appeared) {
-        appeared = false
         result.label = (Date.now() - time) + " ms!"
       } else {
         result.label = "Lost"
       }
+      clear()
     }
   }
 })
