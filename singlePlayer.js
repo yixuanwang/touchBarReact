@@ -7,58 +7,21 @@ let appeared = false
 let time = 0.0
 const result = new TouchBarLabel()
 const wheel = new TouchBarLabel()
-const click1 = new TouchBarButton({
-  label: '',
-  backgroundColor: "#000",
-  click: () => {
-    if(start) {
-      if(appeared) {
-        result.label = "left player win!"
-        clear()
-      } else {
-        result.label = "right player win!"
-        clear()
-      }
-    }
-  }
-})
-
-const click2 = new TouchBarButton({
-  label: '',
-  backgroundColor: "#000",
-  click: () => {
-    if(start) {
-      if(appeared) {
-        result.label = "right player win!"
-        clear()
-      } else {
-        result.label = "left player win!"
-        clear()
-      }
-    }
-  }
-})
-
 const clear = () => {
   time = 0.0
   start = false
   appeared = false
-  wheel.label = ""
-  click1.label = ""
-  click2.label = ""
-  gameBtn.label = '🔥Start'
+  wheel.label = "🔵"
+  gameBtn.label = "🔥Start"
 }
-
 const gameBtn = new TouchBarButton({
   label: '🔥Start',
   click: () => {
     if(!start) {
-      result.label = ""
       start = true
-      gameBtn.label = time.toString()
+      gameBtn.label = "Click"
       wheel.label = "🔵"
-      click1.label = "Click"
-      click2.label = "Click"
+      result.label = ""
 
       const reactLength = getRandomTime()
       const startTime = Date.now()
@@ -66,18 +29,21 @@ const gameBtn = new TouchBarButton({
         if ((Date.now() - startTime) >= reactLength) {
           wheel.label = "🔴"
           appeared = true
-        }
-        if(start) {
-          time += 1
-          gameBtn.label = time.toString()
-          setTimeout(react, 10)
+          time = Date.now()
         } else {
-          clear()
+          if(start) {
+            setTimeout(react, 10)
+          }
         }
       }
 
       react()
     } else {
+      if(appeared) {
+        result.label = (Date.now() - time) + " ms!"
+      } else {
+        result.label = "Lost"
+      }
       clear()
     }
   }
@@ -91,12 +57,9 @@ const touchBar = new TouchBar({
   items: [
     gameBtn,
     new TouchBarSpacer({ size: 'large' }),
-    click1,
-    new TouchBarSpacer({ size: 'flexible' }),
     wheel,
+    new TouchBarSpacer({ size: 'large' }),
     result,
-    new TouchBarSpacer({ size: 'flexible' }),
-    click2,
   ]
 })
 
@@ -108,7 +71,7 @@ app.once('ready', () => {
     titleBarStyle: 'hiddenInset',
     width: 200,
     height: 200,
-    backgroundColor: '#000',
+    backgroundColor: '#000'
   })
   window.loadURL('about:blank')
   window.setTouchBar(touchBar)
